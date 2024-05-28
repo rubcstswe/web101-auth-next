@@ -9,8 +9,8 @@ export default async function Home() {
   return (
     <div>
       <SignOut />
-      {/* <p>{session.user.id ?? ""}</p>
-      <p>{session.user.name ?? ""}</p> */}
+      <p>JWT:{session.user.id ?? ""}</p>
+      {/* <p>{session.user.name ?? ""}</p> */}
       <p>Email: {session.user.email ?? ""}</p>
       {/* <img src={session.user.image ?? ""} alt="User Avatar" /> */}
     </div>

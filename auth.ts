@@ -1,5 +1,23 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+
+declare module "next-auth" {
+  /**
+   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+   */
+  interface Session {
+    user: {
+      /** The user's postal address. */
+      token: string;
+      /**
+       * By default, TypeScript merges new interface properties and overwrites existing ones.
+       * In this case, the default session user properties will be overwritten,
+       * with the new ones defined above. To keep the default session user properties,
+       * you need to add them back into the newly declared interface.
+       */
+    } & DefaultSession["user"];
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -33,28 +51,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: parsedResponse.email,
             name: parsedResponse.name,
             image: parsedResponse.image,
+            token: parsedResponse.token,
           };
           return user;
         } catch (error) {
           return null;
         }
-        // let user = null;
-
-        // // logic to salt and hash password
-        // const pwHash = saltAndHashPassword(credentials.password);
-
-        // // logic to verify if user exists
-        // user = await getUserFromDb(credentials.email, pwHash);
-
-        // if (!user) {
-        //   // No user found, so this is their first attempt to login
-        //   // meaning this is also the place you could do registration
-        //   throw new Error("User not found.");
-        // }
-
-        // // return user object with the their profile data
-        // return user;
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        // User is available during sign-in
+
+        console.log("JWT CALLBACK", user);
+        console.log("TOKEN CALLBACK", token);
+        token.id = (user as { token: string }).token;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.id = (token.id as string).toString();
+      return session;
+    },
+  },
 });
