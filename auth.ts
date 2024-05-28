@@ -63,16 +63,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        // User is available during sign-in
-
-        console.log("JWT CALLBACK", user);
-        console.log("TOKEN CALLBACK", token);
         token.id = (user as { token: string }).token;
       }
       return token;
     },
     session({ session, token }) {
-      session.user.id = (token.id as string).toString();
+      session.user.token = (token.id as string).toString();
       return session;
     },
   },
