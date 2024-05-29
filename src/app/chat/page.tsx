@@ -9,10 +9,13 @@ export default async function Protected() {
   const user = {
     image: session?.user.image,
     name: session?.user.name,
+    email: session?.user.email,
   };
   return (
-    <div className="p-8">
-      <ChatComponent data={user} />
+    <div className="bg-slate-50">
+      <div className="p-4">
+        <ChatComponent data={user} />
+      </div>
     </div>
   );
 }
