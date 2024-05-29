@@ -3,6 +3,8 @@ import List from "./list";
 import { SetStateAction, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Todo() {
   const [input, setInput] = useState("");
@@ -11,12 +13,17 @@ export default function Todo() {
     "Wash the dishes",
     "Clean the house",
   ]);
+  const { toast } = useToast();
 
-  function handleSubmit(e: { preventDefault: () => void }) {
-    e.preventDefault();
+  function handleSubmit() {
     const data = tasks;
     data.push(input);
     setTasks(data);
+
+    toast({
+        title: "Task Created!",
+        description: input,
+    });
     setInput("");
   }
   function handleInput(e: { target: { value: SetStateAction<string> } }) {
@@ -46,6 +53,7 @@ export default function Todo() {
       <div className="pt-4">
         <List data={tasks} />
       </div>
+      <Toaster />
     </div>
   );
 }
