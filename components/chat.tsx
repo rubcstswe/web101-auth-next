@@ -1,58 +1,61 @@
 "use client";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const socket = io("http://localhost:3001"); // Replace with your server URL
 
-export default function ChatComponent() {
-  const [messages, setMessages] = useState<string[]>([]);
+export default function ChatComponent(data: any) {
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  console.log("USER", data);
   useEffect(() => {
     // Listen for incoming messages
     // SUB
-    console.log("socket is sending me stuff");
     socket.on("chat message", (message) => {
-      console.log("message", message);
-      setMessages((prevMessages: string[]) => [...prevMessages, message]);
-      // const prevMsg = messages;
-      // console.log("prevMsg", prevMsg);
-      // prevMsg.push(message);
-      // setMessages(prevMsg);
+      setMessages((prevMessages: any[]) => [...prevMessages, message]);
     });
   }, []);
 
   // PUB
   const sendMessage = () => {
-    console.log("newMessage SENT", newMessage);
-    socket.emit("chat message", newMessage);
+    const payload = {
+      content: newMessage,
+      userProfileImage: data.data.image,
+      userName: data.data.name,
+    };
+    console.log(payload);
+    socket.emit("chat message", payload);
     setNewMessage("");
   };
-  console.log(messages);
   return (
     <>
       <div>
         {messages.map((message, index) => (
           <div className="flex flex-row items-center space-x-2" key={index}>
             <Avatar className="h-[50px] w-[50px]">
-              <AvatarImage src={""} alt="@shadcn" />
+              <AvatarImage src={message.userProfileImage} alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <Card className="max-w-md">
               <CardHeader>
-                <CardDescription>{message}</CardDescription>
+                <CardDescription>{message.content}</CardDescription>
               </CardHeader>
             </Card>
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div>
+        <Input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+        />
+        <Button onClick={sendMessage}>Send</Button>
+      </div>
     </>
   );
 }
