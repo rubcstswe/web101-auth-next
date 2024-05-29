@@ -48,7 +48,7 @@ export default function ChatComponent(data: any) {
           </Avatar>
           <CardHeader>
             <CardDescription className="font-bold text-slate-800">
-              {data.data.name}
+              NOTE: THIS IS YOU! THE ACCOUNT THAT YOU USED TO LOG IN{data.data.name}
             </CardDescription>
           </CardHeader>
         </Card>
